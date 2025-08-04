@@ -21,27 +21,41 @@ import java.util.List;
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long id;
+    private Long id;
+
+    private String bedType;
     private String roomType;
+    private int roomNumber;
+    private String description;
+    private String roomCategory;
     private BigDecimal roomPrice;
+    private List<String> amenities;
     private boolean isBooked = false;
+
+    @ManyToOne
+    @JoinColumn(name = "hotel_id")
+    private Hotel hotel;
+
     @Lob
     private Blob photo;
 
-    @OneToMany(mappedBy="room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<BookedRoom> bookings;
 
     public Room() {
         this.bookings = new ArrayList<>();
     }
-    public void addBooking(BookedRoom booking){
-        if (bookings == null){
+
+    public void addBooking(BookedRoom booking) {
+        if (bookings == null) {
             bookings = new ArrayList<>();
         }
         bookings.add(booking);
         booking.setRoom(this);
         isBooked = true;
+
         String bookingCode = RandomStringUtils.randomNumeric(10);
         booking.setBookingConfirmationCode(bookingCode);
     }
+
 }

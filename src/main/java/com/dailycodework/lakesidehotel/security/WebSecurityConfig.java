@@ -65,6 +65,12 @@ public class WebSecurityConfig {
                         .permitAll()
                         .requestMatchers("/bookings/room/{roomId}/booking", "/bookings/confirmation/{confirmationCode}")
                         .permitAll()
+                        .requestMatchers("/api/v1/hotels/all", "/api/v1/hotels/{id}", "/api/v1/hotels/search",
+                                "/api/v1/hotels/health")
+                        .permitAll()
+                        .requestMatchers("/api/v1/hotels/add", "/api/v1/hotels/update/{id}",
+                                "/api/v1/hotels/delete/{id}")
+                        .hasRole("ADMIN")
                         .requestMatchers("/rooms/add/new-room", "/rooms/delete/room/{roomId}", "/rooms/update/{roomId}",
                                 "/rooms/test-auth")
                         .hasRole("ADMIN")

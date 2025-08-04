@@ -17,6 +17,12 @@ import java.util.Optional;
 public interface IRoomService {
     Room addNewRoom(MultipartFile photo, String roomType, BigDecimal roomPrice) throws SQLException, IOException;
 
+    Room addNewRoom(String bedType, String roomType, int roomNumber, String description,
+            String roomCategory, BigDecimal roomPrice, List<String> amenities,
+            boolean isBooked, Long hotelId, MultipartFile photo) throws SQLException, IOException;
+
+    Room addNewRoomFromJson(Room room) throws SQLException, IOException;
+
     List<String> getAllRoomTypes();
 
     List<Room> getAllRooms();

@@ -10,7 +10,6 @@ import com.dailycodework.lakesidehotel.service.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-
 /**
  * @author Simpson Alfred
  */
@@ -37,21 +35,20 @@ public class AuthController {
     private final JwtUtils jwtUtils;
 
     @PostMapping("/register-user")
-    public ResponseEntity<?> registerUser(@RequestBody User user){
-        try{
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        try {
             userService.registerUser(user);
             return ResponseEntity.ok("Registration successful!");
 
-        }catch (UserAlreadyExistsException e){
+        } catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest request){
-        Authentication authentication =
-                authenticationManager
-                        .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest request) {
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtTokenForUser(authentication);
         HotelUserDetails userDetails = (HotelUserDetails) authentication.getPrincipal();

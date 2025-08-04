@@ -31,10 +31,10 @@ public class BookingController {
 
     @GetMapping("/all-bookings")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<BookingResponse>> getAllBookings(){
+    public ResponseEntity<List<BookingResponse>> getAllBookings() {
         List<BookedRoom> bookings = bookingService.getAllBookings();
         List<BookingResponse> bookingResponses = new ArrayList<>();
-        for (BookedRoom booking : bookings){
+        for (BookedRoom booking : bookings) {
             BookingResponse bookingResponse = getBookingResponse(booking);
             bookingResponses.add(bookingResponse);
         }
@@ -43,24 +43,24 @@ public class BookingController {
 
     @PostMapping("/room/{roomId}/booking")
     public ResponseEntity<?> saveBooking(@PathVariable Long roomId,
-                                         @RequestBody BookedRoom bookingRequest){
-        try{
+            @RequestBody BookedRoom bookingRequest) {
+        try {
             String confirmationCode = bookingService.saveBooking(roomId, bookingRequest);
             return ResponseEntity.ok(
-                    "Room booked successfully, Your booking confirmation code is :"+confirmationCode);
+                    "Room booked successfully, Your booking confirmation code is :" + confirmationCode);
 
-        }catch (InvalidBookingRequestException e){
+        } catch (InvalidBookingRequestException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @GetMapping("/confirmation/{confirmationCode}")
-    public ResponseEntity<?> getBookingByConfirmationCode(@PathVariable String confirmationCode){
-        try{
+    public ResponseEntity<?> getBookingByConfirmationCode(@PathVariable String confirmationCode) {
+        try {
             BookedRoom booking = bookingService.findByBookingConfirmationCode(confirmationCode);
             BookingResponse bookingResponse = getBookingResponse(booking);
             return ResponseEntity.ok(bookingResponse);
-        }catch (ResourceNotFoundException ex){
+        } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
@@ -77,7 +77,7 @@ public class BookingController {
     }
 
     @DeleteMapping("/booking/{bookingId}/delete")
-    public void cancelBooking(@PathVariable Long bookingId){
+    public void cancelBooking(@PathVariable Long bookingId) {
         bookingService.cancelBooking(bookingId);
     }
 
@@ -89,9 +89,9 @@ public class BookingController {
                 theRoom.getRoomPrice());
         return new BookingResponse(
                 booking.getBookingId(), booking.getCheckInDate(),
-                booking.getCheckOutDate(),booking.getGuestFullName(),
+                booking.getCheckOutDate(), booking.getGuestFullName(),
                 booking.getGuestEmail(), booking.getNumOfAdults(),
-                booking.getNumOfChildren(), booking.getTotalNumOfGuest(),
+                booking.getNumOfChildren(), booking.getTotalNumOfGuests(),
                 booking.getBookingConfirmationCode(), room);
     }
 }

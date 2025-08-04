@@ -1,5 +1,6 @@
 package com.dailycodework.lakesidehotel.model;
 
+import com.dailycodework.lakesidehotel.config.BookingStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,59 +9,53 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-/**
- * @author Simpson Alfred
- */
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class BookedRoom {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long bookingId;
+    private Long bookingId;
 
-    @Column(name = "check_in")
     private LocalDate checkInDate;
-
-    @Column(name = "check_out")
     private LocalDate checkOutDate;
 
-    @Column(name = "guest_fullName")
-    private String guestFullName; 
-
-    @Column(name = "guest_email")
+    private String guestFullName;
     private String guestEmail;
 
-    @Column(name = "adults")
-    private int NumOfAdults;
+    private int numOfAdults;
+    private int numOfChildren;
+    private int totalNumOfGuests;
 
-    @Column(name = "children")
-    private int NumOfChildren;
-
-    @Column(name = "total_guest")
-    private int totalNumOfGuest;
-
-    @Column(name = "confirmation_Code")
+    @Column(unique = true)
     private String bookingConfirmationCode;
+
+    @Enumerated(EnumType.STRING)
+    private BookingStatus status;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
 
-    public void calculateTotalNumberOfGuest(){
-        this.totalNumOfGuest = this.NumOfAdults + NumOfChildren;
+    public void calculateTotalGuests() {
+        this.totalNumOfGuests = this.numOfAdults + this.numOfChildren;
     }
 
     public void setNumOfAdults(int numOfAdults) {
-        NumOfAdults = numOfAdults;
-        calculateTotalNumberOfGuest();
+        this.numOfAdults = numOfAdults;
+        calculateTotalGuests();
     }
 
     public void setNumOfChildren(int numOfChildren) {
-        NumOfChildren = numOfChildren;
-        calculateTotalNumberOfGuest();
+        this.numOfChildren = numOfChildren;
+        calculateTotalGuests();
     }
 
     public void setBookingConfirmationCode(String bookingConfirmationCode) {

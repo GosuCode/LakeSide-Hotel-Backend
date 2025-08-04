@@ -41,12 +41,37 @@ public class RoomController {
     @PostMapping("/add/new-room")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<RoomResponse> addNewRoom(
-            @RequestParam("photo") MultipartFile photo,
+            @RequestParam("bedType") String bedType,
             @RequestParam("roomType") String roomType,
-            @RequestParam("roomPrice") BigDecimal roomPrice) throws SQLException, IOException {
-        Room savedRoom = roomService.addNewRoom(photo, roomType, roomPrice);
-        RoomResponse response = new RoomResponse(savedRoom.getId(), savedRoom.getRoomType(),
-                savedRoom.getRoomPrice());
+            @RequestParam("roomNumber") int roomNumber,
+            @RequestParam("description") String description,
+            @RequestParam("roomCategory") String roomCategory,
+            @RequestParam("roomPrice") BigDecimal roomPrice,
+            @RequestParam(value = "amenities", required = false) String amenitiesString,
+            @RequestParam("isBooked") boolean isBooked,
+            @RequestParam(value = "hotel.id", required = false) Long hotelId,
+            @RequestParam(value = "photo", required = false) MultipartFile photo) throws SQLException, IOException {
+
+        // Parse amenities from comma-separated string
+        List<String> amenities = null;
+        if (amenitiesString != null && !amenitiesString.trim().isEmpty()) {
+            amenities = List.of(amenitiesString.split(","));
+        }
+
+        Room savedRoom = roomService.addNewRoom(
+                bedType, roomType, roomNumber, description, roomCategory,
+                roomPrice, amenities, isBooked, hotelId, photo);
+        RoomResponse response = new RoomResponse(savedRoom.getId(), savedRoom.getRoomNumber(),
+                savedRoom.getRoomType(), savedRoom.getRoomPrice(), savedRoom.isBooked(), null, null);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/add/new-room-json")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<RoomResponse> addNewRoomJson(@RequestBody Room room) throws SQLException, IOException {
+        Room savedRoom = roomService.addNewRoomFromJson(room);
+        RoomResponse response = new RoomResponse(savedRoom.getId(), savedRoom.getRoomNumber(),
+                savedRoom.getRoomType(), savedRoom.getRoomPrice(), savedRoom.isBooked(), null, null);
         return ResponseEntity.ok(response);
     }
 
@@ -149,7 +174,7 @@ public class RoomController {
             }
         }
         return new RoomResponse(room.getId(),
-                room.getRoomType(), room.getRoomPrice(),
+                room.getRoomNumber(), room.getRoomType(), room.getRoomPrice(),
                 room.isBooked(), photoBytes, bookingInfo);
     }
 

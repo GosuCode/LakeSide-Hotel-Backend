@@ -1,6 +1,7 @@
 package com.dailycodework.lakesidehotel.response;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -12,11 +13,13 @@ import java.util.List;
  * @author Simpson Alfred
  */
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 public class RoomResponse {
     private Long id;
     private String roomType;
     private BigDecimal roomPrice;
+    private int roomNumber;
     private boolean isBooked;
     private String photo;
     private List<BookingResponse>bookings;
@@ -27,9 +30,10 @@ public class RoomResponse {
         this.roomPrice = roomPrice;
     }
 
-    public RoomResponse(Long id, String roomType, BigDecimal roomPrice, boolean isBooked,
+    public RoomResponse(Long id, int roomNumber, String roomType, BigDecimal roomPrice, boolean isBooked,
                         byte[] photoBytes , List<BookingResponse> bookings) {
         this.id = id;
+        this.roomNumber = roomNumber;
         this.roomType = roomType;
         this.roomPrice = roomPrice;
         this.isBooked = isBooked;
