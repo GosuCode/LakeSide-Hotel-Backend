@@ -91,13 +91,13 @@ public class RoomController {
         List<Room> rooms = roomService.getAllRooms();
         List<RoomResponse> roomResponses = new ArrayList<>();
         for (Room room : rooms) {
+            RoomResponse roomResponse = getRoomResponse(room);
             byte[] photoBytes = roomService.getRoomPhotoByRoomId(room.getId());
             if (photoBytes != null && photoBytes.length > 0) {
                 String base64Photo = Base64.encodeBase64String(photoBytes);
-                RoomResponse roomResponse = getRoomResponse(room);
                 roomResponse.setPhoto(base64Photo);
-                roomResponses.add(roomResponse);
             }
+            roomResponses.add(roomResponse);
         }
         return ResponseEntity.ok(roomResponses);
     }
