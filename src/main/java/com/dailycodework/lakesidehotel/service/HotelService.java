@@ -64,36 +64,18 @@ public class HotelService implements IHotelService {
     private HotelResponse mapToResponse(Hotel hotel) {
         List<RoomResponse> roomResponses = hotel.getRooms() == null ? List.of()
                 : hotel.getRooms().stream().map(room -> {
-                    try {
-                        byte[] photoBytes = room.getPhoto() != null
-                                ? room.getPhoto().getBytes(1, (int) room.getPhoto().length())
-                                : null;
-                        return new RoomResponse(
-                                room.getId(),
-                                room.getRoomNumber(),
-                                room.getRoomType(),
-                                room.getRoomPrice(),
-                                room.isBooked(),
-                                photoBytes,
-                                room.getBookings().stream()
-                                        .map(booking -> new BookingResponse(booking.getBookingId(),
-                                                booking.getCheckInDate(),
-                                                booking.getCheckOutDate(), booking.getBookingConfirmationCode()))
-                                        .collect(Collectors.toList()));
-                    } catch (Exception e) {
-                        return new RoomResponse(
-                                room.getId(),
-                                room.getRoomNumber(),
-                                room.getRoomType(),
-                                room.getRoomPrice(),
-                                room.isBooked(),
-                                null,
-                                room.getBookings().stream()
-                                        .map(booking -> new BookingResponse(booking.getBookingId(),
-                                                booking.getCheckInDate(),
-                                                booking.getCheckOutDate(), booking.getBookingConfirmationCode()))
-                                        .collect(Collectors.toList()));
-                    }
+                    return new RoomResponse(
+                            room.getId(),
+                            room.getRoomNumber(),
+                            room.getRoomType(),
+                            room.getRoomPrice(),
+                            room.isBooked(),
+                            room.getPhotoUrl(),
+                            room.getBookings().stream()
+                                    .map(booking -> new BookingResponse(booking.getBookingId(),
+                                            booking.getCheckInDate(),
+                                            booking.getCheckOutDate(), booking.getBookingConfirmationCode()))
+                                    .collect(Collectors.toList()));
                 }).collect(Collectors.toList());
 
         return new HotelResponse(
