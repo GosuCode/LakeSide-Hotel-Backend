@@ -7,7 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,6 +31,16 @@ public class BookedRoom {
     private int numOfAdults;
     private int numOfChildren;
     private int totalNumOfGuests;
+
+    // New pricing fields
+    private BigDecimal basePricePerNight;
+    private BigDecimal finalPricePerNight;
+    private BigDecimal totalAmount;
+    private int numberOfNights;
+
+    // Store pricing adjustments as JSON string
+    @Column(columnDefinition = "TEXT")
+    private String pricingAdjustments;
 
     @Column(unique = true)
     private String bookingConfirmationCode;
@@ -60,5 +72,20 @@ public class BookedRoom {
 
     public void setBookingConfirmationCode(String bookingConfirmationCode) {
         this.bookingConfirmationCode = bookingConfirmationCode;
+    }
+
+    // New method to calculate total amount
+    public void calculateTotalAmount() {
+        if (this.finalPricePerNight != null && this.numberOfNights > 0) {
+            this.totalAmount = this.finalPricePerNight.multiply(BigDecimal.valueOf(this.numberOfNights));
+        }
+    }
+
+    // Method to set dates and calculate nights
+    public void setCheckInAndCheckOut(LocalDate checkIn, LocalDate checkOut) {
+        this.checkInDate = checkIn;
+        this.checkOutDate = checkOut;
+        this.numberOfNights = checkOut.getDayOfYear() - checkIn.getDayOfYear();
+        calculateTotalAmount();
     }
 }

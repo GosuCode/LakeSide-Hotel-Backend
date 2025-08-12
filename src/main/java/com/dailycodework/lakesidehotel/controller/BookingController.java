@@ -5,16 +5,19 @@ import com.dailycodework.lakesidehotel.exception.ResourceNotFoundException;
 import com.dailycodework.lakesidehotel.model.BookedRoom;
 import com.dailycodework.lakesidehotel.model.Room;
 import com.dailycodework.lakesidehotel.response.BookingResponse;
+import com.dailycodework.lakesidehotel.response.DynamicPricingResponse;
 import com.dailycodework.lakesidehotel.response.RoomResponse;
+import com.dailycodework.lakesidehotel.service.IDynamicPricingService;
 import com.dailycodework.lakesidehotel.service.IBookingService;
 import com.dailycodework.lakesidehotel.service.IRoomService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +31,7 @@ import java.util.List;
 public class BookingController {
     private final IBookingService bookingService;
     private final IRoomService roomService;
+    private final IDynamicPricingService dynamicPricingService;
 
     @GetMapping("/all-bookings")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -39,6 +43,24 @@ public class BookingController {
             bookingResponses.add(bookingResponse);
         }
         return ResponseEntity.ok(bookingResponses);
+    }
+
+    @GetMapping("/pricing/{roomId}")
+    public ResponseEntity<DynamicPricingResponse> calculatePricing(
+            @PathVariable Long roomId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkIn,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOut) {
+
+        try {
+            DynamicPricingResponse pricing = dynamicPricingService.calculatePrice(roomId, checkIn, checkOut);
+            // Apply timing-based adjustments (last-minute, early-bird)
+            pricing = dynamicPricingService.applyTimingAdjustments(pricing, checkIn);
+            return ResponseEntity.ok(pricing);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping("/room/{roomId}/booking")
