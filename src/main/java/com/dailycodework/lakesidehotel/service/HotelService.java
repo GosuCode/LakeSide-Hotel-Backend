@@ -5,24 +5,28 @@ import com.dailycodework.lakesidehotel.repository.HotelRepository;
 import com.dailycodework.lakesidehotel.response.BookingResponse;
 import com.dailycodework.lakesidehotel.response.HotelResponse;
 import com.dailycodework.lakesidehotel.response.RoomResponse;
+import com.dailycodework.lakesidehotel.service.KDTreeService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class HotelService implements IHotelService {
 
     private final HotelRepository hotelRepository;
-
-    public HotelService(HotelRepository hotelRepository) {
-        this.hotelRepository = hotelRepository;
-    }
+    private final KDTreeService kdTreeService;
 
     @Override
     public HotelResponse createHotel(Hotel hotel) {
         Hotel saved = hotelRepository.save(hotel);
+        // Update K-D Tree if coordinates are available
+        if (saved.getLatitude() != null && saved.getLongitude() != null) {
+            kdTreeService.updateHotelCache(saved);
+        }
         return mapToResponse(saved);
     }
 
@@ -55,8 +59,17 @@ public class HotelService implements IHotelService {
         existing.setRoomsCount(updatedHotel.getRoomsCount());
         existing.setDescription(updatedHotel.getDescription());
         existing.setImageUrl(updatedHotel.getImageUrl());
+        existing.setLatitude(updatedHotel.getLatitude());
+        existing.setLongitude(updatedHotel.getLongitude());
 
-        return mapToResponse(hotelRepository.save(existing));
+        Hotel saved = hotelRepository.save(existing);
+
+        // Update K-D Tree if coordinates are available
+        if (saved.getLatitude() != null && saved.getLongitude() != null) {
+            kdTreeService.updateHotelCache(saved);
+        }
+
+        return mapToResponse(saved);
     }
 
     @Override
@@ -64,6 +77,7 @@ public class HotelService implements IHotelService {
         if (!hotelRepository.existsById(id)) {
             throw new EntityNotFoundException("Hotel not found with id " + id);
         }
+        kdTreeService.removeHotel(id);
         hotelRepository.deleteById(id);
     }
 

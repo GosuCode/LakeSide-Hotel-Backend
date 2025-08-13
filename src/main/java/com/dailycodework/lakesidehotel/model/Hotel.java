@@ -33,6 +33,10 @@ public class Hotel {
     private String description;
     private String imageUrl;
 
+    // Coordinates for K-D Tree
+    private Double latitude;
+    private Double longitude;
+
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Room> rooms;
 
