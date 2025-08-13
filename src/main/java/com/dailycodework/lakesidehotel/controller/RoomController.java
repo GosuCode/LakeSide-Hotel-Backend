@@ -59,13 +59,13 @@ public class RoomController {
         Room savedRoom = roomService.addNewRoom(
                 bedType, roomType, roomNumber, description, roomCategory,
                 roomPrice, amenities, isBooked, hotelId, photoUrl);
-        
+
         // Convert Hotel to HotelResponse if hotel exists
         com.dailycodework.lakesidehotel.response.HotelResponse hotelResponse = null;
         if (savedRoom.getHotel() != null) {
             hotelResponse = hotelService.getHotelById(savedRoom.getHotel().getId());
         }
-        
+
         RoomResponse response = new RoomResponse(savedRoom.getId(), savedRoom.getRoomNumber(),
                 savedRoom.getRoomType(), savedRoom.getRoomPrice(), savedRoom.isBooked(),
                 savedRoom.getPhotoUrl(), null, savedRoom.getBedType(), savedRoom.getDescription(),
@@ -79,13 +79,13 @@ public class RoomController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<RoomResponse> addNewRoomJson(@RequestBody Room room) {
         Room savedRoom = roomService.addNewRoomFromJson(room);
-        
+
         // Convert Hotel to HotelResponse if hotel exists
         com.dailycodework.lakesidehotel.response.HotelResponse hotelResponse = null;
         if (savedRoom.getHotel() != null) {
             hotelResponse = hotelService.getHotelById(savedRoom.getHotel().getId());
         }
-        
+
         RoomResponse response = new RoomResponse(savedRoom.getId(), savedRoom.getRoomNumber(),
                 savedRoom.getRoomType(), savedRoom.getRoomPrice(), savedRoom.isBooked(),
                 savedRoom.getPhotoUrl(), null, savedRoom.getBedType(), savedRoom.getDescription(),
@@ -131,6 +131,15 @@ public class RoomController {
             @RequestParam(required = false) BigDecimal roomPrice,
             @RequestParam(required = false) String photoUrl) {
         Room theRoom = roomService.updateRoom(roomId, roomType, roomPrice, photoUrl);
+        RoomResponse roomResponse = getRoomResponse(theRoom);
+        return ResponseEntity.ok(roomResponse);
+    }
+
+    @PutMapping("/update-full/{roomId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<RoomResponse> updateRoomFull(@PathVariable Long roomId,
+            @RequestBody Room roomUpdate) {
+        Room theRoom = roomService.updateRoomFull(roomId, roomUpdate);
         RoomResponse roomResponse = getRoomResponse(theRoom);
         return ResponseEntity.ok(roomResponse);
     }

@@ -75,7 +75,7 @@ public class WebSecurityConfig {
                                 "/api/v1/hotels/health")
                         .permitAll()
                         .requestMatchers("/rooms/add/new-room", "/rooms/delete/room/{roomId}", "/rooms/update/{roomId}",
-                                "/rooms/test-auth")
+                                "/rooms/update-full/{roomId}", "/rooms/test-auth")
                         .hasRole("ADMIN")
                         .requestMatchers("/bookings/all-bookings").hasRole("ADMIN")
                         .requestMatchers("/bookings/user/{email}/bookings", "/bookings/booking/{bookingId}/delete")

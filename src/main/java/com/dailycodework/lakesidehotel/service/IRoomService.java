@@ -28,6 +28,8 @@ public interface IRoomService {
 
     Room updateRoom(Long roomId, String roomType, BigDecimal roomPrice, String photoUrl);
 
+    Room updateRoomFull(Long roomId, Room roomUpdate);
+
     Optional<Room> getRoomById(Long roomId);
 
     List<Room> getAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, String roomType);

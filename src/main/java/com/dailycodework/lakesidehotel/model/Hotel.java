@@ -14,14 +14,26 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Hotel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Basic Info
     private String name;
     private String address;
-    private String contact;
 
-    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
+    // Contact & Online Presence
+    private String contact;
+    private String email;
+    private String website;
+    private Integer roomsCount;
+
+    @Column(length = 2000)
+    private String description;
+    private String imageUrl;
+
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Room> rooms;
+
 }

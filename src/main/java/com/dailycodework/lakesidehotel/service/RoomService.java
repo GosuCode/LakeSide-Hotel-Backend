@@ -118,4 +118,41 @@ public class RoomService implements IRoomService {
 
         return roomRepository.save(room);
     }
+
+    @Override
+    public Room updateRoomFull(Long roomId, Room roomUpdate) {
+        Room existingRoom = roomRepository.findById(roomId)
+                .orElseThrow(() -> new ResourceNotFoundException("Room not found with id " + roomId));
+
+        // Update all fields if they are provided
+        if (roomUpdate.getRoomType() != null) {
+            existingRoom.setRoomType(roomUpdate.getRoomType());
+        }
+        if (roomUpdate.getBedType() != null) {
+            existingRoom.setBedType(roomUpdate.getBedType());
+        }
+        if (roomUpdate.getRoomNumber() != 0) {
+            existingRoom.setRoomNumber(roomUpdate.getRoomNumber());
+        }
+        if (roomUpdate.getDescription() != null) {
+            existingRoom.setDescription(roomUpdate.getDescription());
+        }
+        if (roomUpdate.getRoomCategory() != null) {
+            existingRoom.setRoomCategory(roomUpdate.getRoomCategory());
+        }
+        if (roomUpdate.getRoomPrice() != null) {
+            existingRoom.setRoomPrice(roomUpdate.getRoomPrice());
+        }
+        if (roomUpdate.getAmenities() != null) {
+            existingRoom.setAmenities(roomUpdate.getAmenities());
+        }
+        if (roomUpdate.getPhotoUrl() != null && !roomUpdate.getPhotoUrl().trim().isEmpty()) {
+            existingRoom.setPhotoUrl(roomUpdate.getPhotoUrl());
+        }
+        if (roomUpdate.getHotel() != null) {
+            existingRoom.setHotel(roomUpdate.getHotel());
+        }
+
+        return roomRepository.save(existingRoom);
+    }
 }

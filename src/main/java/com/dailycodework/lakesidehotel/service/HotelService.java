@@ -46,9 +46,15 @@ public class HotelService implements IHotelService {
         Hotel existing = hotelRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Hotel not found with id " + id));
 
+        // Update all fields
         existing.setName(updatedHotel.getName());
         existing.setAddress(updatedHotel.getAddress());
         existing.setContact(updatedHotel.getContact());
+        existing.setEmail(updatedHotel.getEmail());
+        existing.setWebsite(updatedHotel.getWebsite());
+        existing.setRoomsCount(updatedHotel.getRoomsCount());
+        existing.setDescription(updatedHotel.getDescription());
+        existing.setImageUrl(updatedHotel.getImageUrl());
 
         return mapToResponse(hotelRepository.save(existing));
     }
@@ -83,6 +89,11 @@ public class HotelService implements IHotelService {
                 hotel.getName(),
                 hotel.getAddress(),
                 hotel.getContact(),
+                hotel.getEmail(),
+                hotel.getWebsite(),
+                hotel.getRoomsCount(),
+                hotel.getDescription(),
+                hotel.getImageUrl(),
                 roomResponses);
     }
 }
