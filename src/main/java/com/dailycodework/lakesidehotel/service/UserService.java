@@ -27,12 +27,20 @@ public class UserService implements IUserService {
 
     @Override
     public User registerUser(User user) {
-        if (userRepository.existsByEmail(user.getEmail())){
+        if (userRepository.existsByEmail(user.getEmail())) {
             throw new UserAlreadyExistsException(user.getEmail() + " already exists");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         System.out.println(user.getPassword());
-        Role userRole = roleRepository.findByName("ROLE_USER").get();
+
+        // Find the ROLE_USER role
+        var userRoleOpt = roleRepository.findByName("ROLE_USER");
+        if (userRoleOpt.isEmpty()) {
+            throw new RuntimeException(
+                    "Default user role (ROLE_USER) not found. Please ensure the application has been properly initialized.");
+        }
+
+        Role userRole = userRoleOpt.get();
         user.setRoles(Collections.singletonList(userRole));
         return userRepository.save(user);
     }
@@ -46,7 +54,7 @@ public class UserService implements IUserService {
     @Override
     public void deleteUser(String email) {
         User theUser = getUser(email);
-        if (theUser != null){
+        if (theUser != null) {
             userRepository.deleteByEmail(email);
         }
 

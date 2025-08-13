@@ -1,69 +1,91 @@
 package com.dailycodework.lakesidehotel.model;
 
+import com.dailycodework.lakesidehotel.config.BookingStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
-/**
- * @author Simpson Alfred
- */
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class BookedRoom {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long bookingId;
+    private Long bookingId;
 
-    @Column(name = "check_in")
     private LocalDate checkInDate;
-
-    @Column(name = "check_out")
     private LocalDate checkOutDate;
 
-    @Column(name = "guest_fullName")
-    private String guestFullName; 
-
-    @Column(name = "guest_email")
+    private String guestFullName;
     private String guestEmail;
 
-    @Column(name = "adults")
-    private int NumOfAdults;
+    private int numOfAdults;
+    private int numOfChildren;
+    private int totalNumOfGuests;
 
-    @Column(name = "children")
-    private int NumOfChildren;
+    // New pricing fields
+    private BigDecimal basePricePerNight;
+    private BigDecimal finalPricePerNight;
+    private BigDecimal totalAmount;
+    private int numberOfNights;
 
-    @Column(name = "total_guest")
-    private int totalNumOfGuest;
+    // Store pricing adjustments as JSON string
+    @Column(columnDefinition = "TEXT")
+    private String pricingAdjustments;
 
-    @Column(name = "confirmation_Code")
+    @Column(unique = true)
     private String bookingConfirmationCode;
+
+    @Enumerated(EnumType.STRING)
+    private BookingStatus status;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
 
-    public void calculateTotalNumberOfGuest(){
-        this.totalNumOfGuest = this.NumOfAdults + NumOfChildren;
+    public void calculateTotalGuests() {
+        this.totalNumOfGuests = this.numOfAdults + this.numOfChildren;
     }
 
     public void setNumOfAdults(int numOfAdults) {
-        NumOfAdults = numOfAdults;
-        calculateTotalNumberOfGuest();
+        this.numOfAdults = numOfAdults;
+        calculateTotalGuests();
     }
 
     public void setNumOfChildren(int numOfChildren) {
-        NumOfChildren = numOfChildren;
-        calculateTotalNumberOfGuest();
+        this.numOfChildren = numOfChildren;
+        calculateTotalGuests();
     }
 
     public void setBookingConfirmationCode(String bookingConfirmationCode) {
         this.bookingConfirmationCode = bookingConfirmationCode;
+    }
+
+    // New method to calculate total amount
+    public void calculateTotalAmount() {
+        if (this.finalPricePerNight != null && this.numberOfNights > 0) {
+            this.totalAmount = this.finalPricePerNight.multiply(BigDecimal.valueOf(this.numberOfNights));
+        }
+    }
+
+    // Method to set dates and calculate nights
+    public void setCheckInAndCheckOut(LocalDate checkIn, LocalDate checkOut) {
+        this.checkInDate = checkIn;
+        this.checkOutDate = checkOut;
+        this.numberOfNights = checkOut.getDayOfYear() - checkIn.getDayOfYear();
+        calculateTotalAmount();
     }
 }
