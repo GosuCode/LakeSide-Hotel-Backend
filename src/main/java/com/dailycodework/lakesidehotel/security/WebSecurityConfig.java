@@ -18,6 +18,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 /**
  * @author Simpson Alfred
@@ -55,6 +60,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .exceptionHandling(
                         exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -68,9 +74,6 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/v1/hotels/all", "/api/v1/hotels/{id}", "/api/v1/hotels/search",
                                 "/api/v1/hotels/health")
                         .permitAll()
-                        .requestMatchers("/api/v1/hotels/add", "/api/v1/hotels/update/{id}",
-                                "/api/v1/hotels/delete/{id}")
-                        .hasRole("ADMIN")
                         .requestMatchers("/rooms/add/new-room", "/rooms/delete/room/{roomId}", "/rooms/update/{roomId}",
                                 "/rooms/test-auth")
                         .hasRole("ADMIN")
@@ -80,10 +83,25 @@ public class WebSecurityConfig {
                         .requestMatchers("/users/all").hasRole("ADMIN")
                         .requestMatchers("/users/{email}", "/users/delete/{userId}").authenticated()
                         .requestMatchers("/roles/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/hotels/add", "/api/v1/hotels/update/{id}",
+                                "/api/v1/hotels/delete/{id}")
+                        .hasRole("ADMIN")
                         .anyRequest().authenticated());
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }

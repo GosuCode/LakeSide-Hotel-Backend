@@ -43,9 +43,15 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                logger.debug("Set authentication for user: {}", email);
+            } else if (jwt != null) {
+                logger.debug("Invalid JWT token provided");
+            } else {
+                logger.debug("No JWT token provided for request: {}", request.getRequestURI());
             }
         }catch (Exception e){
-            logger.error("Cannot set user authentication : {} ", e.getMessage());
+            logger.error("Cannot set user authentication for request {}: {} ", request.getRequestURI(), e.getMessage());
+            // Don't throw the exception, just continue the filter chain
         }
         filterChain.doFilter(request, response);
     }
