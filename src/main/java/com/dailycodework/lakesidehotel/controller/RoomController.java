@@ -7,6 +7,7 @@ import com.dailycodework.lakesidehotel.response.BookingResponse;
 import com.dailycodework.lakesidehotel.response.DynamicPricingResponse;
 import com.dailycodework.lakesidehotel.response.RoomResponse;
 import com.dailycodework.lakesidehotel.service.BookingService;
+import com.dailycodework.lakesidehotel.service.HotelService;
 import com.dailycodework.lakesidehotel.service.IDynamicPricingService;
 import com.dailycodework.lakesidehotel.service.IRoomService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class RoomController {
     private final IRoomService roomService;
     private final BookingService bookingService;
     private final IDynamicPricingService dynamicPricingService;
+    private final HotelService hotelService;
 
     @PostMapping("/add/new-room")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -57,8 +59,19 @@ public class RoomController {
         Room savedRoom = roomService.addNewRoom(
                 bedType, roomType, roomNumber, description, roomCategory,
                 roomPrice, amenities, isBooked, hotelId, photoUrl);
+        
+        // Convert Hotel to HotelResponse if hotel exists
+        com.dailycodework.lakesidehotel.response.HotelResponse hotelResponse = null;
+        if (savedRoom.getHotel() != null) {
+            hotelResponse = hotelService.getHotelById(savedRoom.getHotel().getId());
+        }
+        
         RoomResponse response = new RoomResponse(savedRoom.getId(), savedRoom.getRoomNumber(),
-                savedRoom.getRoomType(), savedRoom.getRoomPrice(), savedRoom.isBooked(), null, null);
+                savedRoom.getRoomType(), savedRoom.getRoomPrice(), savedRoom.isBooked(),
+                savedRoom.getPhotoUrl(), null, savedRoom.getBedType(), savedRoom.getDescription(),
+                savedRoom.getRoomCategory(), savedRoom.getAmenities(),
+                savedRoom.getHotel() != null ? savedRoom.getHotel().getId() : null,
+                hotelResponse);
         return ResponseEntity.ok(response);
     }
 
@@ -66,8 +79,19 @@ public class RoomController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<RoomResponse> addNewRoomJson(@RequestBody Room room) {
         Room savedRoom = roomService.addNewRoomFromJson(room);
+        
+        // Convert Hotel to HotelResponse if hotel exists
+        com.dailycodework.lakesidehotel.response.HotelResponse hotelResponse = null;
+        if (savedRoom.getHotel() != null) {
+            hotelResponse = hotelService.getHotelById(savedRoom.getHotel().getId());
+        }
+        
         RoomResponse response = new RoomResponse(savedRoom.getId(), savedRoom.getRoomNumber(),
-                savedRoom.getRoomType(), savedRoom.getRoomPrice(), savedRoom.isBooked(), null, null);
+                savedRoom.getRoomType(), savedRoom.getRoomPrice(), savedRoom.isBooked(),
+                savedRoom.getPhotoUrl(), null, savedRoom.getBedType(), savedRoom.getDescription(),
+                savedRoom.getRoomCategory(), savedRoom.getAmenities(),
+                savedRoom.getHotel() != null ? savedRoom.getHotel().getId() : null,
+                hotelResponse);
         return ResponseEntity.ok(response);
     }
 
@@ -192,9 +216,18 @@ public class RoomController {
                         booking.getCheckOutDate(), booking.getBookingConfirmationCode()))
                 .toList();
 
+        // Convert Hotel to HotelResponse if hotel exists
+        com.dailycodework.lakesidehotel.response.HotelResponse hotelResponse = null;
+        if (room.getHotel() != null) {
+            hotelResponse = hotelService.getHotelById(room.getHotel().getId());
+        }
+
         return new RoomResponse(room.getId(),
                 room.getRoomNumber(), room.getRoomType(), room.getRoomPrice(),
-                room.isBooked(), room.getPhotoUrl(), bookingInfo);
+                room.isBooked(), room.getPhotoUrl(), bookingInfo, room.getBedType(),
+                room.getDescription(), room.getRoomCategory(), room.getAmenities(),
+                room.getHotel() != null ? room.getHotel().getId() : null,
+                hotelResponse);
     }
 
     private List<BookedRoom> getAllBookingsByRoomId(Long roomId) {
