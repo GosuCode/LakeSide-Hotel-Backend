@@ -37,7 +37,7 @@ public class RoomService implements IRoomService {
     @Override
     public Room addNewRoom(String bedType, String roomType, int roomNumber, String description,
             String roomCategory, BigDecimal roomPrice, List<String> amenities,
-            boolean isBooked, Long hotelId, String photoUrl) {
+            Long hotelId, String photoUrl) {
         Room room = new Room();
         room.setBedType(bedType);
         room.setRoomType(roomType);
@@ -46,7 +46,6 @@ public class RoomService implements IRoomService {
         room.setRoomCategory(roomCategory);
         room.setRoomPrice(roomPrice);
         room.setAmenities(amenities);
-        room.setBooked(isBooked);
 
         // Set hotel if hotelId is provided
         if (hotelId != null) {

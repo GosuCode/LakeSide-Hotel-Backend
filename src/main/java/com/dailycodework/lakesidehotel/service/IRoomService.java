@@ -16,7 +16,7 @@ public interface IRoomService {
 
     Room addNewRoom(String bedType, String roomType, int roomNumber, String description,
             String roomCategory, BigDecimal roomPrice, List<String> amenities,
-            boolean isBooked, Long hotelId, String photoUrl);
+            Long hotelId, String photoUrl);
 
     Room addNewRoomFromJson(Room room);
 

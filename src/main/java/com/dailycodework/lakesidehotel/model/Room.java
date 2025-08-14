@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,6 @@ public class Room {
     private String roomCategory;
     private BigDecimal roomPrice;
     private List<String> amenities;
-    private boolean isBooked = false;
 
     @ManyToOne
     @JoinColumn(name = "hotel_id")
@@ -50,10 +50,41 @@ public class Room {
         }
         bookings.add(booking);
         booking.setRoom(this);
-        isBooked = true;
 
         String bookingCode = RandomStringUtils.randomNumeric(10);
         booking.setBookingConfirmationCode(bookingCode);
     }
 
+    /**
+     * Check if room is available for the given date range
+     * 
+     * @param checkInDate  requested check-in date
+     * @param checkOutDate requested check-out date
+     * @return true if room is available for the dates
+     */
+    public boolean isAvailableForDates(LocalDate checkInDate, LocalDate checkOutDate) {
+        if (bookings == null || bookings.isEmpty()) {
+            return true;
+        }
+
+        return bookings.stream()
+                .noneMatch(booking -> (checkInDate.isBefore(booking.getCheckOutDate()) &&
+                        checkOutDate.isAfter(booking.getCheckInDate())));
+    }
+
+    /**
+     * Get current availability status (for display purposes)
+     * 
+     * @return true if room has any current or future bookings
+     */
+    public boolean hasCurrentBookings() {
+        if (bookings == null || bookings.isEmpty()) {
+            return false;
+        }
+
+        LocalDate today = LocalDate.now();
+        return bookings.stream()
+                .anyMatch(booking -> booking.getCheckOutDate().isAfter(today) ||
+                        booking.getCheckOutDate().isEqual(today));
+    }
 }

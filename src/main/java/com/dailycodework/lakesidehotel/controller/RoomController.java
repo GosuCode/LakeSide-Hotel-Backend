@@ -46,7 +46,6 @@ public class RoomController {
             @RequestParam("roomCategory") String roomCategory,
             @RequestParam("roomPrice") BigDecimal roomPrice,
             @RequestParam(value = "amenities", required = false) String amenitiesString,
-            @RequestParam("isBooked") boolean isBooked,
             @RequestParam(value = "hotel.id", required = false) Long hotelId,
             @RequestParam(value = "photoUrl", required = false) String photoUrl) {
 
@@ -58,7 +57,7 @@ public class RoomController {
 
         Room savedRoom = roomService.addNewRoom(
                 bedType, roomType, roomNumber, description, roomCategory,
-                roomPrice, amenities, isBooked, hotelId, photoUrl);
+                roomPrice, amenities, hotelId, photoUrl);
 
         // Convert Hotel to HotelResponse if hotel exists
         com.dailycodework.lakesidehotel.response.HotelResponse hotelResponse = null;
@@ -66,12 +65,11 @@ public class RoomController {
             hotelResponse = hotelService.getHotelById(savedRoom.getHotel().getId());
         }
 
-        RoomResponse response = new RoomResponse(savedRoom.getId(), savedRoom.getRoomNumber(),
-                savedRoom.getRoomType(), savedRoom.getRoomPrice(), savedRoom.isBooked(),
-                savedRoom.getPhotoUrl(), null, savedRoom.getBedType(), savedRoom.getDescription(),
-                savedRoom.getRoomCategory(), savedRoom.getAmenities(),
+        RoomResponse response = new RoomResponse(savedRoom.getId(), savedRoom.getBedType(),
+                savedRoom.getRoomType(), savedRoom.getRoomNumber(), savedRoom.getDescription(),
+                savedRoom.getRoomCategory(), savedRoom.getRoomPrice(), savedRoom.getAmenities(),
                 savedRoom.getHotel() != null ? savedRoom.getHotel().getId() : null,
-                hotelResponse);
+                hotelResponse, savedRoom.getPhotoUrl(), null);
         return ResponseEntity.ok(response);
     }
 
@@ -86,12 +84,11 @@ public class RoomController {
             hotelResponse = hotelService.getHotelById(savedRoom.getHotel().getId());
         }
 
-        RoomResponse response = new RoomResponse(savedRoom.getId(), savedRoom.getRoomNumber(),
-                savedRoom.getRoomType(), savedRoom.getRoomPrice(), savedRoom.isBooked(),
-                savedRoom.getPhotoUrl(), null, savedRoom.getBedType(), savedRoom.getDescription(),
-                savedRoom.getRoomCategory(), savedRoom.getAmenities(),
+        RoomResponse response = new RoomResponse(savedRoom.getId(), savedRoom.getBedType(),
+                savedRoom.getRoomType(), savedRoom.getRoomNumber(), savedRoom.getDescription(),
+                savedRoom.getRoomCategory(), savedRoom.getRoomPrice(), savedRoom.getAmenities(),
                 savedRoom.getHotel() != null ? savedRoom.getHotel().getId() : null,
-                hotelResponse);
+                hotelResponse, savedRoom.getPhotoUrl(), null);
         return ResponseEntity.ok(response);
     }
 
@@ -231,12 +228,16 @@ public class RoomController {
             hotelResponse = hotelService.getHotelById(room.getHotel().getId());
         }
 
-        return new RoomResponse(room.getId(),
-                room.getRoomNumber(), room.getRoomType(), room.getRoomPrice(),
-                room.isBooked(), room.getPhotoUrl(), bookingInfo, room.getBedType(),
-                room.getDescription(), room.getRoomCategory(), room.getAmenities(),
+        RoomResponse roomResponse = new RoomResponse(room.getId(), room.getBedType(),
+                room.getRoomType(), room.getRoomNumber(), room.getDescription(),
+                room.getRoomCategory(), room.getRoomPrice(), room.getAmenities(),
                 room.getHotel() != null ? room.getHotel().getId() : null,
-                hotelResponse);
+                hotelResponse, room.getPhotoUrl(), bookingInfo);
+
+        // Set availability status
+        roomResponse.setCurrentAvailability();
+
+        return roomResponse;
     }
 
     private List<BookedRoom> getAllBookingsByRoomId(Long roomId) {

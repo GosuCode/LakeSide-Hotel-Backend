@@ -84,18 +84,22 @@ public class HotelService implements IHotelService {
     private HotelResponse mapToResponse(Hotel hotel) {
         List<RoomResponse> roomResponses = hotel.getRooms() == null ? List.of()
                 : hotel.getRooms().stream().map(room -> {
-                    return new RoomResponse(
+                    RoomResponse roomResponse = new RoomResponse(
                             room.getId(),
                             room.getRoomNumber(),
                             room.getRoomType(),
                             room.getRoomPrice(),
-                            room.isBooked(),
                             room.getPhotoUrl(),
                             room.getBookings().stream()
                                     .map(booking -> new BookingResponse(booking.getBookingId(),
                                             booking.getCheckInDate(),
                                             booking.getCheckOutDate(), booking.getBookingConfirmationCode()))
                                     .collect(Collectors.toList()));
+
+                    // Set availability status
+                    roomResponse.setCurrentAvailability();
+
+                    return roomResponse;
                 }).collect(Collectors.toList());
 
         return new HotelResponse(

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import com.dailycodework.lakesidehotel.response.HotelResponse;
 
@@ -19,7 +20,6 @@ public class RoomResponse {
     private String roomType;
     private BigDecimal roomPrice;
     private int roomNumber;
-    private boolean isBooked;
     private String photo;
     private List<BookingResponse> bookings;
 
@@ -30,57 +30,75 @@ public class RoomResponse {
     private Long hotelId;
     private HotelResponse hotel;
 
+    // Computed availability fields
+    private boolean isAvailableForDates;
+    private boolean hasCurrentBookings;
+
     public RoomResponse(Long id, String roomType, BigDecimal roomPrice) {
         this.id = id;
         this.roomType = roomType;
         this.roomPrice = roomPrice;
     }
 
-    public RoomResponse(Long id, int roomNumber, String roomType, BigDecimal roomPrice, boolean isBooked,
-            String photoUrl, List<BookingResponse> bookings) {
+    public RoomResponse(Long id, int roomNumber, String roomType, BigDecimal roomPrice, String photoUrl,
+            List<BookingResponse> bookings) {
         this.id = id;
         this.roomNumber = roomNumber;
         this.roomType = roomType;
         this.roomPrice = roomPrice;
-        this.isBooked = isBooked;
         this.photo = photoUrl;
         this.bookings = bookings;
     }
 
     // New constructor with all fields
-    public RoomResponse(Long id, int roomNumber, String roomType, BigDecimal roomPrice, boolean isBooked,
-            String photoUrl, List<BookingResponse> bookings, String bedType, String description,
-            String roomCategory, List<String> amenities, Long hotelId) {
+    public RoomResponse(Long id, String bedType, String roomType, int roomNumber, String description,
+            String roomCategory, BigDecimal roomPrice, List<String> amenities, Long hotelId,
+            HotelResponse hotel, String photoUrl, List<BookingResponse> bookings) {
         this.id = id;
-        this.roomNumber = roomNumber;
-        this.roomType = roomType;
-        this.roomPrice = roomPrice;
-        this.isBooked = isBooked;
-        this.photo = photoUrl;
-        this.bookings = bookings;
         this.bedType = bedType;
+        this.roomType = roomType;
+        this.roomNumber = roomNumber;
         this.description = description;
         this.roomCategory = roomCategory;
-        this.amenities = amenities;
-        this.hotelId = hotelId;
-    }
-
-    // Constructor with hotel object
-    public RoomResponse(Long id, int roomNumber, String roomType, BigDecimal roomPrice, boolean isBooked,
-            String photoUrl, List<BookingResponse> bookings, String bedType, String description,
-            String roomCategory, List<String> amenities, Long hotelId, HotelResponse hotel) {
-        this.id = id;
-        this.roomNumber = roomNumber;
-        this.roomType = roomType;
         this.roomPrice = roomPrice;
-        this.isBooked = isBooked;
-        this.photo = photoUrl;
-        this.bookings = bookings;
-        this.bedType = bedType;
-        this.description = description;
-        this.roomCategory = roomCategory;
         this.amenities = amenities;
         this.hotelId = hotelId;
         this.hotel = hotel;
+        this.photo = photoUrl;
+        this.bookings = bookings;
+    }
+
+    /**
+     * Set availability for specific dates
+     */
+    public void setAvailabilityForDates(LocalDate checkIn, LocalDate checkOut) {
+        if (bookings == null || bookings.isEmpty()) {
+            this.isAvailableForDates = true;
+            return;
+        }
+
+        this.isAvailableForDates = bookings.stream()
+                .noneMatch(booking -> {
+                    LocalDate bookingCheckIn = booking.getCheckInDate();
+                    LocalDate bookingCheckOut = booking.getCheckOutDate();
+                    return (checkIn.isBefore(bookingCheckOut) && checkOut.isAfter(bookingCheckIn));
+                });
+    }
+
+    /**
+     * Set current availability status
+     */
+    public void setCurrentAvailability() {
+        if (bookings == null || bookings.isEmpty()) {
+            this.hasCurrentBookings = false;
+            return;
+        }
+
+        LocalDate today = LocalDate.now();
+        this.hasCurrentBookings = bookings.stream()
+                .anyMatch(booking -> {
+                    LocalDate checkOut = booking.getCheckOutDate();
+                    return checkOut.isAfter(today) || checkOut.isEqual(today);
+                });
     }
 }
