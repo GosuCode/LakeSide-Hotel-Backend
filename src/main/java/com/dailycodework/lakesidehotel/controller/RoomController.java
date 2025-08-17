@@ -38,44 +38,7 @@ public class RoomController {
 
     @PostMapping("/add/new-room")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<RoomResponse> addNewRoom(
-            @RequestParam("bedType") String bedType,
-            @RequestParam("roomType") String roomType,
-            @RequestParam("roomNumber") int roomNumber,
-            @RequestParam("description") String description,
-            @RequestParam("roomCategory") String roomCategory,
-            @RequestParam("roomPrice") BigDecimal roomPrice,
-            @RequestParam(value = "amenities", required = false) String amenitiesString,
-            @RequestParam(value = "hotel.id", required = false) Long hotelId,
-            @RequestParam(value = "photoUrl", required = false) String photoUrl) {
-
-        // Parse amenities from comma-separated string
-        List<String> amenities = null;
-        if (amenitiesString != null && !amenitiesString.trim().isEmpty()) {
-            amenities = List.of(amenitiesString.split(","));
-        }
-
-        Room savedRoom = roomService.addNewRoom(
-                bedType, roomType, roomNumber, description, roomCategory,
-                roomPrice, amenities, hotelId, photoUrl);
-
-        // Convert Hotel to HotelResponse if hotel exists
-        com.dailycodework.lakesidehotel.response.HotelResponse hotelResponse = null;
-        if (savedRoom.getHotel() != null) {
-            hotelResponse = hotelService.getHotelById(savedRoom.getHotel().getId());
-        }
-
-        RoomResponse response = new RoomResponse(savedRoom.getId(), savedRoom.getBedType(),
-                savedRoom.getRoomType(), savedRoom.getRoomNumber(), savedRoom.getDescription(),
-                savedRoom.getRoomCategory(), savedRoom.getRoomPrice(), savedRoom.getAmenities(),
-                savedRoom.getHotel() != null ? savedRoom.getHotel().getId() : null,
-                hotelResponse, savedRoom.getPhotoUrl(), null);
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/add/new-room-json")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<RoomResponse> addNewRoomJson(@RequestBody Room room) {
+    public ResponseEntity<RoomResponse> addNewRoom(@RequestBody Room room) {
         Room savedRoom = roomService.addNewRoomFromJson(room);
 
         // Convert Hotel to HotelResponse if hotel exists

@@ -77,6 +77,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/rooms/add/new-room", "/rooms/delete/room/{roomId}", "/rooms/update/{roomId}",
                                 "/rooms/update-full/{roomId}", "/rooms/test-auth")
                         .hasRole("ADMIN")
+                        .requestMatchers("/dashboard/**").hasRole("ADMIN")
                         .requestMatchers("/bookings/all-bookings").hasRole("ADMIN")
                         .requestMatchers("/bookings/user/{email}/bookings", "/bookings/booking/{bookingId}/delete")
                         .authenticated()
