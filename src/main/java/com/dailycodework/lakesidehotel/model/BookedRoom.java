@@ -31,6 +31,7 @@ public class BookedRoom {
     private int numOfAdults;
     private int numOfChildren;
     private int totalNumOfGuests;
+    private String phoneNumber;
 
     // New pricing fields
     private BigDecimal basePricePerNight;

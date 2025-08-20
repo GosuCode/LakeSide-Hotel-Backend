@@ -1,14 +1,5 @@
 package com.dailycodework.lakesidehotel.service;
 
-import com.dailycodework.lakesidehotel.exception.ResourceNotFoundException;
-import com.dailycodework.lakesidehotel.model.Room;
-import com.dailycodework.lakesidehotel.repository.RoomRepository;
-import com.dailycodework.lakesidehotel.response.DynamicPricingResponse;
-import com.dailycodework.lakesidehotel.response.PricingAdjustment;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
@@ -16,6 +7,17 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.dailycodework.lakesidehotel.exception.ResourceNotFoundException;
+import com.dailycodework.lakesidehotel.model.Room;
+import com.dailycodework.lakesidehotel.repository.RoomRepository;
+import com.dailycodework.lakesidehotel.response.DynamicPricingResponse;
+import com.dailycodework.lakesidehotel.response.PricingAdjustment;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Service implementation for dynamic pricing calculations

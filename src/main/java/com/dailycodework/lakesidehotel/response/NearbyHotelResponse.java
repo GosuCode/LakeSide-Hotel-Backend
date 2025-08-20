@@ -12,6 +12,12 @@ import lombok.Setter;
 public class NearbyHotelResponse {
     private Long id;
     private String name;
+    private String address;
+    private String contact;
+    private String email;
+    private String imageUrl;
+    private String description;
+    private Integer roomsCount;
     private Double latitude;
     private Double longitude;
     private Double distance;

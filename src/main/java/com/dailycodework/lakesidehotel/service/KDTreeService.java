@@ -80,6 +80,12 @@ public class KDTreeService {
             NearbyHotelResponse response = new NearbyHotelResponse(
                     node.getHotelId(),
                     hotel.getName(),
+                    hotel.getAddress(),
+                    hotel.getContact(),
+                    hotel.getEmail(),
+                    hotel.getImageUrl(),
+                    hotel.getDescription(),
+                    hotel.getRoomsCount(),
                     node.getLatitude(),
                     node.getLongitude(),
                     distance);
