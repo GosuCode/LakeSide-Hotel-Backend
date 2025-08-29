@@ -15,6 +15,8 @@ public class HotelResponse {
     private Integer roomsCount;
     private String description;
     private String imageUrl;
+    private Double latitude;
+    private Double longitude;
     private List<RoomResponse> rooms;
 
     public HotelResponse() {
@@ -22,7 +24,7 @@ public class HotelResponse {
 
     public HotelResponse(Long id, String name, String address, String contact,
             String email, String website, Integer roomsCount,
-            String description, String imageUrl, List<RoomResponse> rooms) {
+            String description, String imageUrl, Double latitude, Double longitude, List<RoomResponse> rooms) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -32,6 +34,8 @@ public class HotelResponse {
         this.roomsCount = roomsCount;
         this.description = description;
         this.imageUrl = imageUrl;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.rooms = rooms;
     }
 }

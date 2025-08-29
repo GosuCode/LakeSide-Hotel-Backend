@@ -112,6 +112,8 @@ public class HotelService implements IHotelService {
                 hotel.getRoomsCount(),
                 hotel.getDescription(),
                 hotel.getImageUrl(),
+                hotel.getLatitude(),
+                hotel.getLongitude(),
                 roomResponses);
     }
 }
