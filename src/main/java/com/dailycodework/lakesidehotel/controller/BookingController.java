@@ -21,10 +21,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author Simpson Alfred
- */
-
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/bookings")
@@ -105,15 +101,45 @@ public class BookingController {
 
     private BookingResponse getBookingResponse(BookedRoom booking) {
         Room theRoom = roomService.getRoomById(booking.getRoom().getId()).get();
+
+        // Create a more complete RoomResponse with hotel information
         RoomResponse room = new RoomResponse(
                 theRoom.getId(),
+                theRoom.getBedType(),
                 theRoom.getRoomType(),
-                theRoom.getRoomPrice());
+                theRoom.getRoomNumber(),
+                theRoom.getDescription(),
+                theRoom.getRoomCategory(),
+                theRoom.getRoomPrice(),
+                theRoom.getAmenities(),
+                theRoom.getHotel() != null ? theRoom.getHotel().getId() : null,
+                theRoom.getHotel() != null ? new com.dailycodework.lakesidehotel.response.HotelResponse(
+                        theRoom.getHotel().getId(),
+                        theRoom.getHotel().getName(),
+                        theRoom.getHotel().getAddress(),
+                        theRoom.getHotel().getContact(),
+                        theRoom.getHotel().getEmail(),
+                        theRoom.getHotel().getWebsite(),
+                        theRoom.getHotel().getRoomsCount(),
+                        theRoom.getHotel().getDescription(),
+                        theRoom.getHotel().getImageUrl(),
+                        theRoom.getHotel().getLatitude(),
+                        theRoom.getHotel().getLongitude(),
+                        null) : null,
+                theRoom.getPhotoUrl(),
+                null);
+
+        // Calculate number of nights
+        int numOfNights = (int) java.time.temporal.ChronoUnit.DAYS.between(
+                booking.getCheckInDate(), booking.getCheckOutDate());
+        if (numOfNights == 0)
+            numOfNights = 1;
+
         return new BookingResponse(
                 booking.getBookingId(), booking.getCheckInDate(),
                 booking.getCheckOutDate(), booking.getGuestFullName(),
-                booking.getGuestEmail(), booking.getNumOfAdults(),
-                booking.getNumOfChildren(), booking.getTotalNumOfGuests(),
-                booking.getBookingConfirmationCode(), room);
+                booking.getGuestEmail(), booking.getPhoneNumber(),
+                booking.getNumOfAdults(), booking.getNumOfChildren(),
+                booking.getTotalNumOfGuests(), numOfNights, booking.getBookingConfirmationCode(), room);
     }
 }

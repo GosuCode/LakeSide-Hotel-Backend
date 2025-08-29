@@ -14,10 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * @author Simpson Alfred
- */
-
 @Service
 @RequiredArgsConstructor
 public class RoomService implements IRoomService {

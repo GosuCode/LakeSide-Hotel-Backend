@@ -4,10 +4,6 @@ import com.dailycodework.lakesidehotel.model.BookedRoom;
 
 import java.util.List;
 
-/**
- * @author Simpson Alfred
- */
-
 public interface IBookingService {
     void cancelBooking(Long bookingId);
 

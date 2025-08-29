@@ -6,14 +6,12 @@ import com.dailycodework.lakesidehotel.service.HotelService;
 import com.dailycodework.lakesidehotel.service.IRoomService;
 import com.dailycodework.lakesidehotel.service.IUserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;

@@ -15,17 +15,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-
-/**
- * @author Simpson Alfred
- */
-
 @Component
-public class JwtAuthEntryPoint  implements AuthenticationEntryPoint {
+public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-                         AuthenticationException authException) throws IOException, ServletException {
+            AuthenticationException authException) throws IOException, ServletException {
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -40,7 +35,3 @@ public class JwtAuthEntryPoint  implements AuthenticationEntryPoint {
         mapper.writeValue(response.getOutputStream(), body);
     }
 }
-
-
-
-

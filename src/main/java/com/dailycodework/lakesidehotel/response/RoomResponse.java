@@ -9,9 +9,6 @@ import java.time.LocalDate;
 import java.util.List;
 import com.dailycodework.lakesidehotel.response.HotelResponse;
 
-/**
- * @author Simpson Alfred
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

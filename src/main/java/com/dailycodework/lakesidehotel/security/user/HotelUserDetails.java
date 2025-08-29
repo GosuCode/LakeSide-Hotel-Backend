@@ -13,21 +13,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author Simpson Alfred
- */
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class HotelUserDetails implements UserDetails {
     private Long id;
-    private  String email;
+    private String email;
     private String password;
     private Collection<GrantedAuthority> authorities;
 
-    public static HotelUserDetails buildUserDetails(User user){
+    public static HotelUserDetails buildUserDetails(User user) {
         List<GrantedAuthority> authorities = user.getRoles()
                 .stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
@@ -39,8 +35,6 @@ public class HotelUserDetails implements UserDetails {
                 authorities);
 
     }
-
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

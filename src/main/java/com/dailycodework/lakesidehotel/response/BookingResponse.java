@@ -6,10 +6,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-/**
- * @author Simpson Alfred
- */
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,21 +21,32 @@ public class BookingResponse {
 
     private String guestEmail;
 
+    private String guestPhone;
+
     private int numOfAdults;
 
     private int numOfChildren;
 
     private int totalNumOfGuests;
 
+    private int numOfNights;
+
     private String bookingConfirmationCode;
 
     private RoomResponse room;
 
-    public BookingResponse(Long id, LocalDate checkInDate, LocalDate checkOutDate,
-                           String bookingConfirmationCode) {
+    public BookingResponse(Long id, LocalDate checkInDate, LocalDate checkOutDate, String confirmationCode) {
         this.id = id;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
-        this.bookingConfirmationCode = bookingConfirmationCode;
+        this.bookingConfirmationCode = confirmationCode;
+        this.guestName = "";
+        this.guestEmail = "";
+        this.guestPhone = "";
+        this.numOfAdults = 0;
+        this.numOfChildren = 0;
+        this.totalNumOfGuests = 0;
+        this.numOfNights = 0;
+        this.room = null;
     }
 }

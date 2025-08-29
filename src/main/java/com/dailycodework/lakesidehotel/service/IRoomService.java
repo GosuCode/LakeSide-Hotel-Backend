@@ -7,10 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * @author Simpson Alfred
- */
-
 public interface IRoomService {
     Room addNewRoom(String photoUrl, String roomType, BigDecimal roomPrice);
 
