@@ -6,11 +6,13 @@ import com.dailycodework.lakesidehotel.service.KDTreeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@Order(2) // Run after DataInitializer but before DataSeeder
 public class KDTreeInitializer implements CommandLineRunner {
 
     private final HotelRepository hotelRepository;
@@ -32,49 +34,7 @@ public class KDTreeInitializer implements CommandLineRunner {
     }
 
     private void initializeSampleHotels() {
-        // Add some sample hotels with coordinates if none exist
-        if (hotelRepository.count() == 0) {
-            log.info("No hotels found, adding sample data...");
-
-            // Sample hotels with coordinates (replace with real data)
-            Hotel hotel1 = new Hotel();
-            hotel1.setName("LakeSide Hotel");
-            hotel1.setAddress("123 Lake Street");
-            hotel1.setLatitude(40.7128);
-            hotel1.setLongitude(-74.0060);
-            hotel1.setContact("+1-555-0123");
-            hotel1.setEmail("info@lakeside.com");
-            hotel1.setWebsite("www.lakeside.com");
-            hotel1.setRoomsCount(50);
-            hotel1.setDescription("Beautiful lakeside hotel with stunning views");
-            hotelRepository.save(hotel1);
-
-            Hotel hotel2 = new Hotel();
-            hotel2.setName("Mountain View Inn");
-            hotel2.setAddress("456 Mountain Road");
-            hotel2.setLatitude(40.7589);
-            hotel2.setLongitude(-73.9851);
-            hotel2.setContact("+1-555-0456");
-            hotel2.setEmail("info@mountainview.com");
-            hotel2.setWebsite("www.mountainview.com");
-            hotel2.setRoomsCount(30);
-            hotel2.setDescription("Cozy inn with mountain views");
-            hotelRepository.save(hotel2);
-
-            Hotel hotel3 = new Hotel();
-            hotel3.setName("City Center Hotel");
-            hotel3.setAddress("789 Downtown Ave");
-            hotel3.setLatitude(40.7505);
-            hotel3.setLongitude(-73.9934);
-            hotel3.setContact("+1-555-0789");
-            hotel3.setEmail("info@citycenter.com");
-            hotel3.setWebsite("www.citycenter.com");
-            hotel3.setRoomsCount(100);
-            hotel3.setDescription("Modern hotel in the heart of the city");
-            hotelRepository.save(hotel3);
-        }
-
-        // Populate K-D Tree with all hotels
+        // Populate K-D Tree with all hotels (DataSeeder will create the hotels)
         Iterable<Hotel> hotels = hotelRepository.findAll();
         for (Hotel hotel : hotels) {
             if (hotel.getLatitude() != null && hotel.getLongitude() != null) {
